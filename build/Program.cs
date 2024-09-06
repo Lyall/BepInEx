@@ -297,28 +297,8 @@ public sealed class MakeDistTask : FrostingTask<BuildContext>
     }
 }
 
-[TaskName("PushNuGet")]
-public sealed class PushNuGetTask : FrostingTask<BuildContext>
-{
-    public override bool ShouldRun(BuildContext ctx) => !string.IsNullOrWhiteSpace(ctx.NugetApiKey) &&
-                                                        ctx.BuildType != BuildContext.ProjectBuildType.Development;
-
-    public override void Run(BuildContext ctx)
-    {
-        var nugetPath = ctx.OutputDirectory.Combine("NuGet");
-        var settings = new DotNetNuGetPushSettings
-        {
-            Source = ctx.NugetSource,
-            ApiKey = ctx.NugetApiKey
-        };
-        foreach (var pkg in ctx.GetFiles(nugetPath.Combine("*.nupkg").FullPath))
-            ctx.DotNetNuGetPush(pkg, settings);
-    }
-}
-
 [TaskName("Publish")]
 [IsDependentOn(typeof(MakeDistTask))]
-[IsDependentOn(typeof(PushNuGetTask))]
 public sealed class PublishTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext ctx)
